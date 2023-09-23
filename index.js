@@ -30,17 +30,20 @@ const config = require('./config.js');
             if (cur.v != message.video.url && message.video.url.length) {
                 mpv('loadfile ' + geturl(message.video.url));
                 cur.v = message.video.url;
+                await waitms(500);
+                if (message.video.play) message.video.time += 0.500;
             }
-            cur.v = message.video.url;
 
             if (cur.t != message.video.time) {
                 mpv('{ "command": ["seek", ' + message.video.time + ', "absolute", "exact"] }');
             }
-            cur.t = message.video.time;
 
-            if (cur.p !== message.video.play) {
+            if (cur.p !== message.video.play || cur.t != message.video.time) { // need to check for replay
                 mpv('{ "command": ["set_property", "pause", ' + !message.video.play + '] }');
             }
+
+            cur.v = message.video.url;
+            cur.t = message.video.time;
             cur.p = message.video.play;
         }
         if (message.type == 'mpv') {
@@ -115,4 +118,10 @@ function geturl(weburl) {
     } else {
         return weburl;
     }
+}
+
+async function waitms(ms) {
+    await new Promise(resolve => {
+        setTimeout(resolve, ms);
+    });
 }
