@@ -83,7 +83,7 @@ const config = require('./config.js');
         mpv('show-text "websocket connected"');
         ws.send(JSON.stringify({
             type: 'name',
-            name: 'mpv-w2g'
+            name: config.name
         }));
         setInterval(() => {
             ws.send(JSON.stringify({
