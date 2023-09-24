@@ -116,6 +116,9 @@ function geturl(weburl) {
     if (local) {
         return local;
     } else {
+        if (weburl.startsWith('/')) {
+            weburl = 'https://' + config.home + weburl;
+        }
         return weburl;
     }
 }
