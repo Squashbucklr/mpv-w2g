@@ -28,13 +28,15 @@ const config = require('./config.js');
         if (message.type != 'pong') console.log(message);
         if (message.type == 'video') {
             if (cur.v != message.video.url && message.video.url.length) {
-                mpv('loadfile ' + geturl(message.video.url));
+                let url = geturl(message.video.url);
+                if (url) mpv('loadfile ' + url);
                 cur.v = message.video.url;
                 await waitms(500);
                 if (message.video.play) message.video.time += 0.500;
             }
 
-            if (cur.t != message.video.time) {
+            console.log(cur.t, message.video.time);
+            if (Math.abs(cur.t - message.video.time) > 0.01) {
                 mpv('{ "command": ["seek", ' + message.video.time + ', "absolute", "exact"] }');
             }
 
@@ -114,6 +116,7 @@ function geturl(weburl) {
     let params = new URLSearchParams(query);
     let local = params.get('local');
     if (local) {
+        if (local == 'none') return null;
         return local;
     } else {
         if (weburl.startsWith('/')) {
